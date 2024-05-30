@@ -1,0 +1,7 @@
+import { role } from "src/enum/role.enum";
+
+export class createManagerDto{
+    readonly email : string;
+    readonly password : string;
+    readonly role : role
+}
