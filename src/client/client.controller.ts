@@ -1,11 +1,16 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
 import { clientService } from "./client.service";
 import { UpdateUSerDto } from "src/dtos/updateUser.dto";
 import { userDocument } from "src/schema/user.schema";
+import { MailService } from "./mail.service";
+import { coachService } from "src/coach/coach.service";
 
 @Controller('client')
 export class clientController{
-    constructor (private ClientService : clientService){}
+    constructor (private ClientService : clientService,
+        private mailService: MailService,
+        private coachService : coachService
+    ){}
     @Put('/:id')
     async updateClient(@Res() response, @Param('id') clientId : string, @Body() UpdateUSerDto : UpdateUSerDto){
         try {
@@ -51,4 +56,24 @@ export class clientController{
         }
     }
 
+    @Post('/select-coach/:clientId/:coachId')
+    async selectCoach(@Res() response, @Param('clientId') clientId: string, @Param('coachId') coachId: string) {
+        try {
+            const client = await this.ClientService.getClientById(clientId);
+            const coach = await this.coachService.getCoachById(coachId);
+            const subject = 'A Client choose you';
+            const message = `Hello ${coach.firstName},
+                                The client ${client.firstName} chooses u to train him`
+
+            await this.mailService.sendMail(coach.email,subject,message);
+
+            return response.status(HttpStatus.OK).json({
+                message: 'Coach selected successfully and email sent to coach',
+                client,
+                coach
+            });
+        } catch (err) {
+            return response.status(err.status).json(err.response);
+        }
+    }
 }
