@@ -9,13 +9,13 @@ export class MailService {
             port: 587,
             secure: false,
             auth: {
-                user: 'ilyessbtekaya04@gmail.com',
-                pass: 'bbpl bifo spvm cpen'
+                user: 'boussaakadhem0@gmail.com',
+                pass: 'faxl auqf kcrz aivi'
             }
         });
 
         const mailOptions = {
-            from: 'ilyessbtekaya04@gmail.com',
+            from: 'boussaakadhem0@gmail.com',
             to,
             subject,
             text

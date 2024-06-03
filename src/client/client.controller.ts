@@ -57,23 +57,27 @@ export class clientController{
     }
 
     @Post('/select-coach/:clientId/:coachId')
-    async selectCoach(@Res() response, @Param('clientId') clientId: string, @Param('coachId') coachId: string) {
-        try {
-            const client = await this.ClientService.getClientById(clientId);
-            const coach = await this.coachService.getCoachById(coachId);
-            const subject = 'A Client choose you';
-            const message = `Hello ${coach.firstName},
-                                The client ${client.firstName} chooses u to train him`
-
-            await this.mailService.sendMail(coach.email,subject,message);
-
-            return response.status(HttpStatus.OK).json({
-                message: 'Coach selected successfully and email sent to coach',
-                client,
-                coach
-            });
-        } catch (err) {
-            return response.status(err.status).json(err.response);
-        }
+    async selectCoach(
+      @Res() response,
+      @Param('clientId') clientId: string,
+      @Param('coachId') coachId: string,
+    ) {
+      try {
+        const client = await this.ClientService.getClientById(clientId);
+        const coach = await this.coachService.getCoachById(coachId);
+        const subject = 'A Client choose you';
+        const message = `Hello ${coach.firstName},
+                          The client ${client.firstName} chooses you to train him`;
+  
+        await this.mailService.sendMail(coach.email, subject, message);
+  
+        return response.status(HttpStatus.OK).json({
+          message: 'Coach selected successfully and email sent to coach',
+          client,
+          coach,
+        });
+      } catch (err) {
+        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: err.message }); 
+      }
     }
 }
