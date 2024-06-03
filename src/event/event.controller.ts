@@ -1,14 +1,16 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { eventService } from "./event.service";
 import { createEventDto } from "src/dtos/create-event.dto";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
+import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
 
 @Controller('gym')
 export class eventController{
     constructor (private readonly EventService : eventService){}
 
     @Post()
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async createEvent (@Res() response, @Body() CreateEventDto : createEventDto){
         try {
@@ -27,7 +29,8 @@ export class eventController{
     }
 
     @Get()
-    @Roles(role.CLIENT, role.COACH)
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.COACH,role.CLIENT)
     async getAllEvent(@Res() response){
         try{
             const eventData = await this.EventService.getAllEvent();
@@ -41,6 +44,7 @@ export class eventController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async getEvent(@Res() response, @Param('id') eventId : string){
         try{
@@ -54,6 +58,7 @@ export class eventController{
         }
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async deleteEvent(@Res() response, @Param('id') eventId : string) {
         try {

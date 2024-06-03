@@ -11,7 +11,7 @@ export class coachController{
     constructor (private CoachService : coachService){}
     @Put('/:id')
     @UseGuards(AuthUserRoleGuard('*'))
-    @Roles(role.MANAGER)
+    @Roles(role.COACH)
     async updateCoach(@Res() response, @Param('id') coachId : string, @Body() UpdateUSerDto : UpdateUSerDto){
         try {
             const existingCoach = await this.CoachService.updateCoach(
@@ -27,6 +27,8 @@ export class coachController{
         }
     }
     @Get()
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async getAllCoach(@Res() response): Promise<userDocument>{
         try{
             const coachData = await this.CoachService.getAllCoach();
@@ -40,10 +42,14 @@ export class coachController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async getCoachById( @Param('id') coachId : string) : Promise<userDocument | any>{
         return this.CoachService.getCoachById(coachId);
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async deleteCoach(@Res() response, @Param('id') coachId : string) {
         try {
             const deleteCoach = await this.CoachService.deleteCoach(coachId);

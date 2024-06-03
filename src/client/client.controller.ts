@@ -1,9 +1,13 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { clientService } from "./client.service";
 import { UpdateUSerDto } from "src/dtos/updateUser.dto";
 import { userDocument } from "src/schema/user.schema";
 import { MailService } from "./mail.service";
 import { coachService } from "src/coach/coach.service";
+import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
+import { Roles } from "src/decorator/role.decorator";
+import { role } from "src/enum/role.enum";
+
 
 @Controller('client')
 export class clientController{
@@ -11,6 +15,8 @@ export class clientController{
         private mailService: MailService,
         private coachService : coachService
     ){}
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.CLIENT)
     @Put('/:id')
     async updateClient(@Res() response, @Param('id') clientId : string, @Body() UpdateUSerDto : UpdateUSerDto){
         try {
@@ -27,6 +33,8 @@ export class clientController{
         }
     }
     @Get()
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async getAllClient(@Res() response): Promise<userDocument>{
         try{
             const clientData = await this.ClientService.getAllClient();
@@ -40,10 +48,14 @@ export class clientController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async getClientById( @Param('id') clientId : string) : Promise<userDocument | any>{
         return this.ClientService.getClientById(clientId);
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
     async deleteClient(@Res() response, @Param('id') clientId : string) {
         try {
             const deleteAdmin = await this.ClientService.deleteClient(clientId);

@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { user, userDocument } from 'src/schema/user.schema';
 import * as bcrypt from 'bcrypt';
 import { UpdateUSerDto } from 'src/dtos/updateUser.dto';
+import { role } from 'src/enum/role.enum';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('user') private readonly userModel: Model<userDocument>,
   ) {}
-
+  
   async createOne({ email, firstName, lastName, password, role }: user) {
     const newUser = new this.userModel({
       email,

@@ -15,12 +15,14 @@ import { createGymDto } from 'src/dtos/create-gym.dto';
 import { updateGymDto } from 'src/dtos/update-gym.dto';
 import { Roles } from 'src/decorator/role.decorator';
 import { role } from 'src/enum/role.enum';
+import { AuthUserRoleGuard } from 'src/guards/auth-user.guard';
 
 @Controller('gym')
 export class gymController {
   constructor(private readonly GymService: gymService) {}
 
   @Post()
+  @UseGuards(AuthUserRoleGuard('*'))
   @Roles(role.ADMIN)
   async createGym(@Res() response, @Body() CreateGymDto: createGymDto) {
     try {
@@ -39,7 +41,8 @@ export class gymController {
   }
 
   @Put('/:id')
-  @Roles(role.MANAGER)
+  @UseGuards(AuthUserRoleGuard('*'))
+  @Roles(role.ADMIN)
   async updateGym(
     @Res() response,
     @Param('id') gymId: string,
@@ -57,7 +60,8 @@ export class gymController {
   }
 
   @Get()
-  @Roles(role.MANAGER)
+  @UseGuards(AuthUserRoleGuard('*'))
+  @Roles(role.ADMIN)
   async getAllGym(@Res() response) {
     try {
       const gymData = await this.GymService.getAllGym();
@@ -71,7 +75,8 @@ export class gymController {
   }
 
   @Get('/:id')
-  @Roles(role.MANAGER)
+  @UseGuards(AuthUserRoleGuard('*'))
+  @Roles(role.ADMIN)
   async getGym(@Res() response, @Param('id') gymId: string) {
     try {
       const existingGym = await this.GymService.getGym(gymId);
@@ -84,7 +89,8 @@ export class gymController {
     }
   }
   @Delete('/:id')
-  @Roles(role.MANAGER)
+  @UseGuards(AuthUserRoleGuard('*'))
+  @Roles(role.ADMIN)
   async deleteGym(@Res() response, @Param('id') gymId: string) {
     try {
       const deleteGym = await this.GymService.deleteGym(gymId);

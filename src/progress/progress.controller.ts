@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { progressService } from "./progress.service";
 import { createProgressDto } from "src/dtos/create-progress.dto";
 import { updateProgressDto } from "src/dtos/update-progress.dto";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
+import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
 
 @Controller('progress')
 export class progressController{
     constructor (private readonly ProgressService : progressService){}
 
     @Post()
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.COACH)
     async createProgress (@Res() response, @Body() CreateProgressDto : createProgressDto){
         try {
@@ -28,6 +30,7 @@ export class progressController{
     }
 
     @Put('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.COACH)
     async updateProgress(@Res() response, @Param('id') progressId : string, @Body() UpdateProgressDto : updateProgressDto){
         try{
@@ -45,7 +48,8 @@ export class progressController{
     }
 
     @Get()
-    @Roles(role.COACH)
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.COACH,role.CLIENT)
     async getAllProgress(@Res() response){
         try{
             const progressData = await this.ProgressService.getAllProgress();
@@ -59,7 +63,8 @@ export class progressController{
     }
 
     @Get('/:id')
-    @Roles(role.CLIENT)
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.COACH)
     async getProgress(@Res() response, @Param('id') progressId : string){
         try{
             const existingProgress = await this.ProgressService.getProgress(progressId);
@@ -72,6 +77,7 @@ export class progressController{
         }
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.COACH)
     async deleteProgress(@Res() response, @Param('id') progressId : string) {
         try {

@@ -27,6 +27,8 @@ export class managerController{
         }
     }
     @Get()
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.ADMIN)
     async getAllManager(@Res() response): Promise<userDocument>{
         try{
             const managerData = await this.ManagerService.getAllManager();
@@ -40,10 +42,14 @@ export class managerController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.ADMIN)
     async getManagerById( @Param('id') managerId : string) : Promise<userDocument | any>{
         return this.ManagerService.deleteManager(managerId);
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.ADMIN)
     async deleteManager(@Res() response, @Param('id') managerId : string) {
         try {
             const deleteManager = await this.ManagerService.deleteManager(managerId);

@@ -9,12 +9,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { adminService } from 'src/admin/admin.service';
-import { clientService } from 'src/client/client.service';
-import { coachService } from 'src/coach/coach.service';
 import { RegisterUserDto } from 'src/dtos/register-user.dto';
 import { role } from 'src/enum/role.enum';
-import { managerService } from 'src/manager/manager.service';
 import { UserService } from 'src/user/user.service';
 import { AuthReponse } from './auth-response.type';
 import { LoginDto } from './login.dto';

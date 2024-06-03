@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { subscriptionPackService } from "./subscriptionPack.service";
 import { createSubscriptionPackDto } from "src/dtos/create-subscriptionPack.dto";
 import { updateSubscriptionPackDto } from "src/dtos/update-SubscriptionPack.dto";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
+import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
 
 @Controller('subscriptionPack')
 export class subscriptionPackController{
     constructor (private readonly SubscriptionPackService : subscriptionPackService){}
 
     @Post()
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async createSubscriptionPack (@Res() response, @Body() CreateSubscriptionPackDto : createSubscriptionPackDto){
         try {
@@ -28,6 +30,7 @@ export class subscriptionPackController{
     }
 
     @Put('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async updateSubscriptionPack(@Res() response, @Param('id') packId : string, @Body() UpdateSubscriptionPackDto : updateSubscriptionPackDto){
         try{
@@ -45,6 +48,7 @@ export class subscriptionPackController{
     }
 
     @Get()
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.CLIENT)
     async getAllSubscriptionPack(@Res() response){
         try{
@@ -59,6 +63,7 @@ export class subscriptionPackController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async getSubscriptionPack(@Res() response, @Param('id') packId : string){
         try{
@@ -72,6 +77,7 @@ export class subscriptionPackController{
         }
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async deleteSubscriptionPack(@Res() response, @Param('id') packId : string) {
         try {

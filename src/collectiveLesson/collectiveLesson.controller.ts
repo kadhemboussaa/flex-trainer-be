@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { collectiveLessonService } from "./collectiveLesson.service";
 import { createCollectiveLessonDto } from "src/dtos/create-collectiveLesson.dto";
 import { updateCollectiveLessonDto } from "src/dtos/update-collectiveLesson.dto";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
+import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
 
 @Controller('collectiveLesson')
 export class collectiveLessonController{
     constructor (private readonly CollectiveLessonService : collectiveLessonService){}
 
     @Post()
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async createCollectiveLesson (@Res() response, @Body() CreateCollectiveLessonDto : createCollectiveLessonDto){
         try {
@@ -45,7 +47,8 @@ export class collectiveLessonController{
     }
 
     @Get()
-    @Roles(role.CLIENT, role.COACH)
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.COACH,role.CLIENT)
     async getAllCollectiveLesson(@Res() response){
         try{
             const lessonData = await this.CollectiveLessonService.getAllCollectiveLesson();
@@ -59,6 +62,7 @@ export class collectiveLessonController{
     }
 
     @Get('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async getCollectiveLesson(@Res() response, @Param('id') lessonId : string){
         try{
@@ -72,6 +76,7 @@ export class collectiveLessonController{
         }
     }
     @Delete('/:id')
+    @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
     async deleteCollectiveLesson(@Res() response, @Param('id') lessonId : string) {
         try {

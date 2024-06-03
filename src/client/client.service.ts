@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { role } from "src/enum/role.enum";
 import { userDocument } from "src/schema/user.schema";
 import { UserService } from "src/user/user.service";
@@ -11,7 +11,6 @@ import { UpdateUSerDto } from "src/dtos/updateUser.dto";
 export class clientService {
     constructor(@InjectModel('client') private readonly userModel: Model<userDocument>,
     private readonly userService : UserService){}
-
     
     async createClient(baseUserDto : BaseUserDto) : Promise<userDocument>{
         const newClient =  this.userService.createOne({...baseUserDto, role: role.CLIENT});
@@ -26,6 +25,7 @@ export class clientService {
         return client;
     }
     async getAllClient() : Promise <userDocument | any>{
+        
         const clientDetails = this.userService.getAllUser()
         return clientDetails
     }
