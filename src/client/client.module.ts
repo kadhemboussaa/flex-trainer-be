@@ -4,14 +4,17 @@ import { clientController } from './client.controller';
 import { clientService } from './client.service';
 import { ClientSchema } from 'src/schema/client.schema';
 import { UserModule } from 'src/user/user.module';
+import { MailService } from './mail.service';
+import { coachService } from 'src/coach/coach.service';
+import { coachModule } from 'src/coach/coach.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'client', schema: ClientSchema }]),
-    UserModule,
+    UserModule,  coachModule
   ],
   controllers: [clientController],
-  providers: [clientService],
-  exports: [clientService],
+  providers: [clientService,MailService ],
+  exports: [clientService, MailService],
 })
 export class clientModule {}
