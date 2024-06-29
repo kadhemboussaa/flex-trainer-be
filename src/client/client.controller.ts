@@ -7,6 +7,7 @@ import { coachService } from "src/coach/coach.service";
 import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
+import { Response } from 'express';
 
 
 @Controller('client')
@@ -15,6 +16,12 @@ export class clientController{
         private mailService: MailService,
         private coachService : coachService
     ){}
+    @UseGuards(AuthUserRoleGuard('*'))
+    @Roles(role.MANAGER)
+    @Post()
+    async createClient(@Body() clientData : any){
+        
+    }
     @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.CLIENT)
     @Put('/:id')
@@ -35,15 +42,18 @@ export class clientController{
     @Get()
     @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.MANAGER)
-    async getAllClient(@Res() response): Promise<userDocument>{
-        try{
+    async getAllClient(@Res() response: Response): Promise<Response> {
+        try {
             const clientData = await this.ClientService.getAllClient();
             return response.status(HttpStatus.OK).json({
-                message : 'All clients data found successfully',
+                message: 'All clients data found successfully',
                 clientData
             });
-        } catch (err){
-            return response.status(err.status).json(err.response);
+        } catch (err) {
+            return response.status(err.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
+                message: 'An error occurred while fetching clients data',
+                error: err.message
+            });
         }
     }
 
@@ -77,12 +87,14 @@ export class clientController{
       try {
         const client = await this.ClientService.getClientById(clientId);
         const coach = await this.coachService.getCoachById(coachId);
+
         const subject = 'A Client choose you';
         const message = `Hello ${coach.firstName},
                           The client ${client.firstName} chooses you to train him`;
   
         await this.mailService.sendMail(coach.email, subject, message);
-  
+        await this.ClientService.chooseCoach(clientId,coachId)
+
         return response.status(HttpStatus.OK).json({
           message: 'Coach selected successfully and email sent to coach',
           client,
@@ -92,4 +104,5 @@ export class clientController{
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: err.message }); 
       }
     }
+    
 }

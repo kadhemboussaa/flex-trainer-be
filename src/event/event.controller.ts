@@ -4,8 +4,10 @@ import { createEventDto } from "src/dtos/create-event.dto";
 import { Roles } from "src/decorator/role.decorator";
 import { role } from "src/enum/role.enum";
 import { AuthUserRoleGuard } from "src/guards/auth-user.guard";
+import { updateEventDto } from "src/dtos/update-event.dto";
 
-@Controller('gym')
+
+@Controller('event')
 export class eventController{
     constructor (private readonly EventService : eventService){}
 
@@ -71,6 +73,23 @@ export class eventController{
             return response.status(err.status).json(err.response);
         }
     }
-
+    @Put('/:id')
+  @UseGuards(AuthUserRoleGuard('*'))
+  @Roles(role.MANAGER)
+  async updateGym(
+    @Res() response,
+    @Param('id') eventId: string,
+    @Body() UpdateGymDto: updateEventDto,
+  ) {
+    try {
+      const existingEvent = await this.EventService.updateEvent(eventId, UpdateGymDto);
+      return response.status(HttpStatus.OK).json({
+        message: 'gym updated successfully',
+        existingEvent,
+      });
+    } catch (err) {
+      return response.status(err.status).json(err.response);
+    }
+  }
 
 }

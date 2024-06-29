@@ -1,6 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { role } from 'src/enum/role.enum';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { collectiveLesson } from './collectiveLesson.schema';
 
 export type userDocument = user & Document;
 
@@ -22,5 +23,10 @@ export class user {
 
   @Prop({ type: String, enum: role, required: true })
   role: role;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'collectiveLesson' }],
+  })
+  subscriptions?: collectiveLesson[];
 }
 export const UserSchema = SchemaFactory.createForClass(user);

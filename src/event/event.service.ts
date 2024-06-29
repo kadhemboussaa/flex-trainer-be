@@ -35,4 +35,19 @@ export class eventService {
         }
         return deletedEvent;
        }
+       async updateEvent(
+        gymId  : string,
+        UpdateEventDto : updateEventDto,
+    ) : Promise <eventInterface>{
+        const existingEvent = await this.eventModel.findByIdAndUpdate(
+            gymId,
+            UpdateEventDto ,
+            {new: true},
+        );
+        if(!existingEvent){
+            throw new NotFoundException('gym #${packId} not found !');
+
+        }
+        return existingEvent;
+    }   
 }

@@ -14,6 +14,8 @@ import { role } from 'src/enum/role.enum';
 import { UserService } from 'src/user/user.service';
 import { AuthReponse } from './auth-response.type';
 import { LoginDto } from './login.dto';
+import { UpdateUSerDto } from 'src/dtos/updateUser.dto';
+import { userDocument } from 'src/schema/user.schema';
 
 @Injectable()
 export class authService implements OnModuleInit {
@@ -80,7 +82,13 @@ export class authService implements OnModuleInit {
     return bcrypt.compare(password, hashedPassword);
   }
 
-
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUSerDto,
+  ): Promise<userDocument | any> {
+    const existingUser = this.userService.updateUser(userId, updateUserDto);
+    return existingUser;
+  }
   async verifyJwt(jwt: string): Promise<{ exp: number }> {
     try {
       const { exp } = await this.jwtService.verifyAsync(jwt);

@@ -6,10 +6,13 @@ import { userDocument } from "src/schema/user.schema";
 import { UserService } from "src/user/user.service";
 import { BaseUserDto } from 'src/dtos/create-base-user.dto'
 import { UpdateUSerDto } from "src/dtos/updateUser.dto";
+import { coachClientDocument } from "src/schema/coachClient.schema";
+import { Counted } from 'src/types';
 
 @Injectable()
 export class clientService {
-    constructor(@InjectModel('client') private readonly userModel: Model<userDocument>,
+    constructor(
+        @InjectModel('client') private readonly userModel: Model<userDocument>,
     private readonly userService : UserService){}
     
     async createClient(baseUserDto : BaseUserDto) : Promise<userDocument>{
@@ -24,11 +27,14 @@ export class clientService {
         const client = this.userService.getUserById(clientId)
         return client;
     }
-    async getAllClient() : Promise <userDocument | any>{
-        
-        const clientDetails = this.userService.getAllUser()
-        return clientDetails
-    }
+    async getAllClient(): Promise<Counted<userDocument>> {
+        const clientDetails = await this.userService.getAllClients();
+        const clientCount = clientDetails.length;
+        return {
+          items: clientDetails,
+          count: clientCount,
+        };
+      }
     async updateClient(clientId : string, updateUserDto : UpdateUSerDto ) : Promise <userDocument|any>{
         const existingClient = this.userService.updateUser(clientId,updateUserDto)
         return existingClient
@@ -37,5 +43,8 @@ export class clientService {
         const existingClient = this.userService.deleteUser(clientId)
         return existingClient;
     }
-    
+    async chooseCoach (clientId : string,coachId: string ) :Promise<coachClientDocument| any>{
+        const coachClientSave = this.userService.createCoachClient(clientId,coachId)
+        return coachClientSave
+    }
 }

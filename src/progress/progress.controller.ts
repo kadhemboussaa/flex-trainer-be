@@ -13,7 +13,10 @@ export class progressController{
     @Post()
     @UseGuards(AuthUserRoleGuard('*'))
     @Roles(role.COACH)
-    async createProgress (@Res() response, @Body() CreateProgressDto : createProgressDto){
+    async createProgress (
+        @Res() response,
+        @Body() CreateProgressDto : createProgressDto,
+    ) {
         try {
             const newProgress = await this.ProgressService.createProgress(CreateProgressDto);
             return response.status(HttpStatus.CREATED).json({
@@ -78,7 +81,7 @@ export class progressController{
     }
     @Delete('/:id')
     @UseGuards(AuthUserRoleGuard('*'))
-    @Roles(role.COACH)
+    @Roles(role.COACH, role.CLIENT)
     async deleteProgress(@Res() response, @Param('id') progressId : string) {
         try {
             const deleteProgress = await this.ProgressService.deleteProgress(progressId);

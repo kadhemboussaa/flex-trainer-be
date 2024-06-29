@@ -28,12 +28,13 @@ export class gymService {
         }
         return existingGym;
     }
-    async getAllGym():Promise<gymInterface[]>{
-        const gymData = await this.gymModel.find();
-        if (!gymData || gymData.length == 0){
-            throw new NotFoundException('Gym #${packId} not found !')
+    async getAllGym(): Promise<{ gyms: gymInterface[], count: number }> {
+        const gyms = await this.gymModel.find().exec();
+        const count = await this.gymModel.countDocuments().exec();
+        if (!gyms || gyms.length === 0) {
+            throw new NotFoundException('No gyms found!');
         }
-        return gymData;
+        return { gyms, count };
     }
     async getGym(gymId: string) : Promise<gymInterface>{
         const existingGym = await this.gymModel.findById(gymId).exec();

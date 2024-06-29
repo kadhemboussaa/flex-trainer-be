@@ -59,20 +59,24 @@ export class gymController {
     }
   }
 
-  @Get()
-  @UseGuards(AuthUserRoleGuard('*'))
-  @Roles(role.ADMIN)
-  async getAllGym(@Res() response) {
+@Get()
+@UseGuards(AuthUserRoleGuard('*'))
+@Roles(role.ADMIN)
+async getAllGym(@Res() response): Promise<Response> {
     try {
-      const gymData = await this.GymService.getAllGym();
-      return response.status(HttpStatus.OK).json({
-        message: 'All gym data found successfully',
-        gymData,
-      });
+        const { gyms, count } = await this.GymService.getAllGym();
+        return response.status(HttpStatus.OK).json({
+            message: 'All gym data found successfully',
+            gymData: gyms,
+            totalGyms: count
+        });
     } catch (err) {
-      return response.status(err.status).json(err.response);
+        return response.status(err.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: 'An error occurred while fetching gyms data',
+            error: err.message
+        });
     }
-  }
+}
 
   @Get('/:id')
   @UseGuards(AuthUserRoleGuard('*'))

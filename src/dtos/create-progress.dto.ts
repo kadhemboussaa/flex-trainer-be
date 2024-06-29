@@ -1,18 +1,25 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class createProgressDto {
+  @IsNotEmpty()
+  @IsString()
+  readonly coachId: string;
 
-    @IsDate()
-    readonly startDate : Date;
+  @IsNotEmpty()
+  @IsString()
+  readonly clientId: string;
 
-    @IsDate()
-    readonly endDate : Date;
+  @IsDateString()
+  readonly startDate: string;
 
-    @IsString()
-    @IsNotEmpty()
-    readonly status : string;
+  @IsDateString()
+  readonly endDate: string;
 
-    @IsNotEmpty()
-    @IsString()
-    readonly description : string;
+  @IsString()
+  @IsNotEmpty()
+  readonly status: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly description: string;
 }

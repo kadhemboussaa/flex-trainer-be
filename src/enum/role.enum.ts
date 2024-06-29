@@ -3,4 +3,4 @@ export enum role {
   MANAGER = 'manager',
   CLIENT = 'client',
   COACH = 'coach',
-  }
+}
