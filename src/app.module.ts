@@ -1,19 +1,17 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { adminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { authModule } from './auth/auth.module';
 import { clientModule } from './client/client.module';
 import { coachModule } from './coach/coach.module';
-import { collectiveLessonController } from './collectiveLesson/collectiveLesson.controller';
-import { collectiveLessonService } from './collectiveLesson/collectiveLesson.service';
+import { collectiveLessonController } from './Cours/collectiveLesson.controller';
+import { collectiveLessonService } from './Cours/collectiveLesson.service';
 import { eventController } from './event/event.controller';
 import { eventService } from './event/event.service';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { gymController } from './gym/gym.controller';
 import { gymService } from './gym/gym.service';
-import { managerModule } from './manager/manager.module';
 import { progressController } from './progress/progress.controller';
 import { progressService } from './progress/progress.service';
 import { CollectivelessonSchema } from './schema/collectiveLesson.schema';
@@ -26,6 +24,8 @@ import { subscriptionPackModule } from './subscriptionPack/subscriptionPack.modu
 import { trainingSessionController } from './trainingSession/trainingSession.controller';
 import { trainingSessionService } from './trainingSession/trainingSession.service';
 import { UserModule } from './user/user.module';
+import { ManagerModule } from './manager/manager.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -39,12 +39,12 @@ import { UserModule } from './user/user.module';
       { name: 'user', schema: UserSchema },
     ]),
     subscriptionPackModule,
-    managerModule,
-    adminModule,
+    forwardRef(() => adminModule),
     clientModule,
     coachModule,
-    authModule,
-    UserModule,
+    forwardRef(() => AuthModule),
+    forwardRef(() => ManagerModule),
+    forwardRef(() => UserModule),
   ],
   controllers: [
     AppController,

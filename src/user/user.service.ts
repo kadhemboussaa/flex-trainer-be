@@ -52,7 +52,7 @@ export class UserService {
     });
   }
   async getUserById(userId: string): Promise<userDocument> {
-    return this.userModel.findById(userId);
+    return this.userModel.findById(userId).populate('subpack');
   }
   async getAllUser(): Promise<userDocument[]> {
     return this.userModel.find().exec();

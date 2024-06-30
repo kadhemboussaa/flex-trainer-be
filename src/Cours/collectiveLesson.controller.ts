@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -111,6 +112,72 @@ export class collectiveLessonController {
       return response.status(HttpStatus.OK).json({
         message: 'session deleted successfully',
         deleteLesson,
+      });
+    } catch (err) {
+      return response.status(err.status).json(err.response);
+    }
+  }
+  @Post(':courseId/subscribe/:userId')
+  async subscribe(
+    @Param('courseId') courseId: string,
+    @Param('userId') userId: string,
+    @Res() response,
+  ) {
+    try {
+      await this.CollectiveLessonService.subscribe(userId, courseId);
+      return response.status(HttpStatus.OK).json({
+        message: 'User subscribed to the course successfully',
+      });
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        return response.status(HttpStatus.NOT_FOUND).json({
+          message: err.message,
+        });
+      }
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'An error occurred while subscribing the user to the course',
+        error: err.message,
+      });
+    }
+  }
+
+  @Post(':courseId/like/:userId')
+  async like(
+    @Param('courseId') courseId: string,
+    @Param('userId') userId: string,
+    @Res() response,
+  ) {
+    try {
+      await this.CollectiveLessonService.like(userId, courseId);
+      return response.status(HttpStatus.OK).json({
+        message: 'User subscribed to the course successfully',
+      });
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        return response.status(HttpStatus.NOT_FOUND).json({
+          message: err.message,
+        });
+      }
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'An error occurred while subscribing the user to the course',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get(':id/subscribers')
+  async getSubscribersByLessonId(
+    @Param('id') lessonId: string,
+    @Res() response,
+  ) {
+    try {
+      const subscribers =
+        await this.CollectiveLessonService.getSubscribersByLessonId(lessonId);
+      console.log(subscribers);
+
+      return response.status(HttpStatus.OK).json({
+        message: `Subscribers for lesson #${lessonId} found successfully`,
+        leason: subscribers,
       });
     } catch (err) {
       return response.status(err.status).json(err.response);

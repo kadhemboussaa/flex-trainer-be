@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
+  NotFoundException,
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,12 +17,15 @@ import { AuthReponse } from './auth-response.type';
 import { LoginDto } from './login.dto';
 import { UpdateUSerDto } from 'src/dtos/updateUser.dto';
 import { userDocument } from 'src/schema/user.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class authService implements OnModuleInit {
   constructor(
     private jwtService: JwtService,
     private readonly userService: UserService,
+    @InjectModel('user') private readonly userModel: Model<userDocument>,
   ) {}
 
   async onModuleInit() {
@@ -85,10 +89,16 @@ export class authService implements OnModuleInit {
   async updateUser(
     userId: string,
     updateUserDto: UpdateUSerDto,
-  ): Promise<userDocument | any> {
-    const existingUser = this.userService.updateUser(userId, updateUserDto);
+  ): Promise<userDocument> {
+    const existingUser = this.userModel
+      .findByIdAndUpdate(userId, updateUserDto, { new: true })
+      .exec();
+    if (!existingUser) {
+      throw new NotFoundException('session #${packId} not found !');
+    }
     return existingUser;
   }
+
   async verifyJwt(jwt: string): Promise<{ exp: number }> {
     try {
       const { exp } = await this.jwtService.verifyAsync(jwt);

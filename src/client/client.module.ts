@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { clientController } from './client.controller';
 import { clientService } from './client.service';
@@ -12,11 +12,14 @@ import { coachClientSchema } from 'src/schema/coachClient.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'client', schema: ClientSchema }]),
-    MongooseModule.forFeature([{ name: 'coachClientSchema', schema: coachClientSchema }]),
-    UserModule,  coachModule
+    MongooseModule.forFeature([
+      { name: 'coachClientSchema', schema: coachClientSchema },
+    ]),
+    forwardRef(() => UserModule),
+    coachModule,
   ],
   controllers: [clientController],
-  providers: [clientService,MailService ],
+  providers: [clientService, MailService],
   exports: [clientService, MailService],
 })
 export class clientModule {}

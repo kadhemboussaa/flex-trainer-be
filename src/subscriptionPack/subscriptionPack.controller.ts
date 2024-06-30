@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { subscriptionPackService } from "./subscriptionPack.service";
 import { createSubscriptionPackDto } from "src/dtos/create-subscriptionPack.dto";
 import { updateSubscriptionPackDto } from "src/dtos/update-SubscriptionPack.dto";
@@ -91,5 +91,29 @@ export class subscriptionPackController{
         }
     }
 
+    @Post(':subPackId/subscribe/:userId')
+    async subscribe(
+      @Param('subPackId') subPackId: string,
+      @Param('userId') userId: string,
+      @Res() response,
+    ) {
+      try {
+        await this.SubscriptionPackService.subscribe(userId, subPackId);
+        return response.status(HttpStatus.OK).json({
+          message: 'User subscribed to the course successfully',
+        });
+      } catch (err) {
+        if (err instanceof NotFoundException) {
+          return response.status(HttpStatus.NOT_FOUND).json({
+            message: err.message,
+          });
+        }
+        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'An error occurred while subscribing the user to the course',
+          error: err.message,
+        });
+      }
+    }
+  
 
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -50,10 +51,13 @@ export class authController {
     return this.UserService.createOne(baseUserDto);
   }
 
-  @Put('/edit-profile')
+  @Put('/edit-profile/:userId')
   @UseGuards(AuthUserRoleGuard('*'))
   @Roles(role.ADMIN, role.MANAGER, role.CLIENT, role.COACH)
-  updateUser(@Body() updateUserDto: UpdateUSerDto, userId) {
+  async updateUser(
+    @Param('userId') userId: string,
+    @Body() updateUserDto: UpdateUSerDto,
+  ) {
     return this.AuthService.updateUser(userId, updateUserDto);
   }
 }
