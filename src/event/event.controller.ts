@@ -137,9 +137,10 @@ export class eventController {
     @Res() response,
   ) {
     try {
-      await this.EventService.like(userId, courseId);
+      const liked = await this.EventService.like(userId, courseId);
       return response.status(HttpStatus.OK).json({
         message: 'User liked to the course successfully',
+        liked,
       });
     } catch (err) {
       if (err instanceof NotFoundException) {
@@ -151,6 +152,48 @@ export class eventController {
         message: 'An error occurred while liking the user to the event',
         error: err.message,
       });
+    }
+  }
+
+  @Post(':courseId/dislike/:userId')
+  async dislike(
+    @Param('courseId') courseId: string,
+    @Param('userId') userId: string,
+    @Res() response,
+  ) {
+    try {
+      const disliked = await this.EventService.dislike(userId, courseId);
+      return response.status(HttpStatus.OK).json({
+        message: 'User disliked to the course successfully',
+        disliked,
+      });
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        return response.status(HttpStatus.NOT_FOUND).json({
+          message: err.message,
+        });
+      }
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'An error occurred while disliking the user to the event',
+        error: err.message,
+      });
+    }
+  }
+
+  @Get(':id/subscribers')
+  async getSubscribersByEventId(@Param('id') eventId: string, @Res() response) {
+    try {
+      const subscribers = await this.EventService.getSubscribersByLEventId(
+        eventId,
+      );
+      console.log(subscribers);
+
+      return response.status(HttpStatus.OK).json({
+        message: `Subscribers for lesson #${eventId} found successfully`,
+        leason: subscribers,
+      });
+    } catch (err) {
+      return response.status(err.status).json(err.response);
     }
   }
 }

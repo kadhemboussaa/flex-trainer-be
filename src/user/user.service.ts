@@ -73,6 +73,7 @@ export class UserService {
     const existingUser = this.userModel.findByIdAndUpdate(
       userId,
       updateUserDto,
+      { new: true },
     );
     return existingUser;
   }

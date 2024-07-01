@@ -81,4 +81,15 @@ export class subscriptionPackService {
     existingPack.save();
     existingUser.save();
   }
+
+  async getSubscribersBySubsPackId(eventId: string): Promise<any> {
+    const event = await this.subscriptionPackModel
+      .findById(eventId)
+      .populate('userSub')
+      .exec();
+    if (!event) {
+      throw new NotFoundException(`Collective lesson #${eventId} not found!`);
+    }
+    return event;
+  }
 }

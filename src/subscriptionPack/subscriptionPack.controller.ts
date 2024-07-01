@@ -115,5 +115,22 @@ export class subscriptionPackController{
       }
     }
   
-
+    @Get(':id/subscribers')
+    async getSubscribersByLessonId(
+      @Param('id') lessonId: string,
+      @Res() response,
+    ) {
+      try {
+        const subscribers =
+          await this.SubscriptionPackService.getSubscribersBySubsPackId(lessonId);
+        console.log(subscribers);
+  
+        return response.status(HttpStatus.OK).json({
+          message: `Subscribers for lesson #${lessonId} found successfully`,
+          leason: subscribers,
+        });
+      } catch (err) {
+        return response.status(err.status).json(err.response);
+      }
+    }
 }

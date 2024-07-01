@@ -100,6 +100,22 @@ export class collectiveLessonService {
     existingUser.save();
   }
 
+  async dislike(userId: string, eventId) {
+    const existingUser = await this.userService.getUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException('not found !');
+    }
+
+    const event = await this.collectiveLessonModel.findById(eventId).exec();
+    if (!event) {
+      throw new NotFoundException('not found !');
+    }
+    event.likes.push(existingUser._id);
+    existingUser.likes.push(event._id);
+    event.save();
+    existingUser.save();
+  }
+
   async getSubscribersByLessonId(lessonId: string): Promise<any> {
     const lesson = await this.collectiveLessonModel
       .findById(lessonId)

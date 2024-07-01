@@ -2,7 +2,7 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { role } from 'src/enum/role.enum';
 import mongoose, { Document } from 'mongoose';
 import { collectiveLesson } from './collectiveLesson.schema';
-import { event } from './event.schema';
+import { event, eventDocument } from './event.schema';
 import { SubscriptionPack } from './subscriptionPack.schema';
 
 export type userDocument = user & Document;
@@ -39,7 +39,12 @@ export class user {
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'event' }],
   })
-  likes?: event[];
+  likes?: eventDocument[];
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'event' }],
+  })
+  dislikes?: eventDocument[];
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SubscriptionPack' }],
